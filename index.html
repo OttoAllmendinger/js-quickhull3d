@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+  <title>three.js quickhull</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        color: #444;
+        font-family:Monospace;
+        font-size:14px;
+
+        background-color: #ddd;
+        margin: 0px;
+        overflow: hidden;
+      }
+
+      #info {
+        position: absolute;
+        top: 0px; width: 100%;
+        padding: 5px;
+      }
+
+      #subtitle {
+        position: absolute;
+        bottom: 1em;
+        left: 3cm;
+        right: 3cm;
+        text-align: center;
+        font-size: 16px;
+        color: #444;
+      }
+
+      a {
+        color: #0080ff;
+      }
+
+      table.controls {
+        text-align: center;
+        margin-left: auto;
+        margin-right: auto;
+        margin-bottom: 1cm;
+        background: rgba(255, 255, 255, 0.75);
+        padding: 2mm;
+        border: 1px solid #aaa;
+      }
+
+      table.controls td {
+        padding: 1mm;
+      }
+
+      key {
+        display: inline-block;
+        padding: 1mm;
+        border: 1px solid #888;
+      }
+
+      div#links {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        padding: 2mm;
+      }
+    </style>
+  </head>
+
+  <script type="text/template" id="instructions">
+    <table class="controls">
+      <tr>
+        <th colspan=2">controls</th>
+      </tr>
+      <tr>
+        <td><key>k</key>, <key> ← </key></td>
+        <td>prev step</td>
+      </tr>
+      <tr>
+        <td><key>j</key>, <key> → </key></td>
+        <td>next step</td>
+      </tr>
+      <tr>
+        <td><key>Home</key>, <key>g</key></td>
+        <td>first step</td>
+      </tr>
+      <tr>
+        <td><key>End</key>, <key>G</key></td>
+        <td>last step</td>
+      </tr>
+      <tr>
+        <td><key>r</key></td>
+        <td>restart</td>
+      </tr>
+    </table>
+  </script>
+
+  <body>
+    <div id="container">
+    <div id="trace"></div>
+    </div>
+    <div id="subtitle"></div>
+
+
+    <div id="links">
+      <div>
+        <a href="http://www.github.com/OttoAllmendinger/js-quickhull3d">
+          github repo</a>
+        •
+        <a href="http://www.github.com/OttoAllmendinger/js-quickhull3d">
+          annotated source</a>
+      </div>
+    </div>
+    <script src="lib/three.min.js"></script>
+    <script src="lib/Detector.js"></script>
+    <script src="lib/stats.min.js"></script>
+    <script src="lib/random.js"></script>
+    <script src="lib/underscore-min.js"></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/TrackballControls.js"></script>
+    <script src="lib/jquery-2.1.0.min.js"></script>
+    <script src="qhull.js"></script>
+  </body>
+</html>

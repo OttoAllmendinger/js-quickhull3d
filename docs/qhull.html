@@ -1,0 +1,802 @@
+<!DOCTYPE html>  <html> <head>   <title>qhull.coffee</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">   <link rel="stylesheet" media="all" href="docco.custom.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <ul class="sections">           <li id="title">             <div class="annotation">                 <h1>qhull.coffee</h1>             </div>         </li>                              <li id="section-1">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                           <h3>three.js boilerplate</h3>
+
+<p>Just some generic setup to get a 3d fullscreen display</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="nv">SHOW_STATS = </span><span class="kc">false</span>
+
+<span class="k">if</span> <span class="o">!</span><span class="nx">Detector</span><span class="p">.</span><span class="nx">webgl</span>
+  <span class="nx">Detector</span><span class="p">.</span><span class="nx">addWebGLMessage</span><span class="p">()</span>
+
+<span class="nv">init = </span><span class="nf">-&gt;</span>
+  <span class="nv">bgColor = </span><span class="mh">0xeeeeee</span>
+
+  <span class="nv">container = </span><span class="nb">document</span><span class="p">.</span><span class="nx">getElementById</span> <span class="s">&#39;container&#39;</span>
+
+  <span class="nv">camera = camera = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">PerspectiveCamera</span><span class="p">(</span>
+    <span class="mi">27</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">3500</span>
+  <span class="p">)</span>
+  <span class="nv">camera.position.z = </span><span class="mi">2750</span>
+
+
+  <span class="nv">scene = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Scene</span>
+  <span class="nv">scene.fog = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Fog</span> <span class="nx">bgColor</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span>
+
+  <span class="nv">renderer = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">WebGLRenderer</span> <span class="nv">antialias: </span><span class="kc">true</span>
+  <span class="nx">renderer</span><span class="p">.</span><span class="nx">setClearColor</span> <span class="nx">bgColor</span><span class="p">,</span> <span class="mi">1</span>
+  <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span>
+
+  <span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span> <span class="nx">renderer</span><span class="p">.</span><span class="nx">domElement</span>
+
+
+  <span class="k">if</span> <span class="nx">SHOW_STATS</span>
+    <span class="nv">stats = </span><span class="k">new</span> <span class="nx">Stats</span>
+    <span class="nv">stats.domElement.style.position = </span><span class="s">&#39;absolute&#39;</span>
+    <span class="nv">stats.domElement.style.top = </span><span class="s">&#39;0px&#39;</span>
+    <span class="nv">stats.domElement.style.right = </span><span class="s">&#39;0px&#39;</span>
+    <span class="nx">container</span><span class="p">.</span><span class="nx">appendChild</span> <span class="nx">stats</span><span class="p">.</span><span class="nx">domElement</span>
+
+
+  <span class="nv">onWindowResize = </span><span class="nf">-&gt;</span>
+    <span class="nv">camera.aspect = </span><span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span> <span class="o">/</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span>
+    <span class="nx">camera</span><span class="p">.</span><span class="nx">updateProjectionMatrix</span><span class="p">()</span>
+
+    <span class="nx">renderer</span><span class="p">.</span><span class="nx">setSize</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerWidth</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">innerHeight</span>
+
+  <span class="nb">window</span><span class="p">.</span><span class="nx">addEventListener</span> <span class="s">&#39;resize&#39;</span><span class="p">,</span> <span class="nx">onWindowResize</span><span class="p">,</span> <span class="kc">false</span>
+
+
+  <span class="nv">sceneRoot = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Object3D</span>
+
+  <span class="nx">scene</span><span class="p">.</span><span class="nx">add</span> <span class="nx">sceneRoot</span>
+
+  <span class="nv">controls = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">OrbitControls</span> <span class="nx">camera</span>
+  <span class="nv">controls.noKeys = </span><span class="kc">true</span>
+  <span class="nv">controls.noZoom = </span><span class="kc">true</span>
+  <span class="nv">controls.noPan = </span><span class="kc">true</span>
+
+  <span class="nb">window</span><span class="p">.</span><span class="nv">sceneRoot = </span><span class="nx">sceneRoot</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">renderer = </span><span class="nx">renderer</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">camera = </span><span class="nx">camera</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">controls = </span><span class="nx">controls</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">scene = </span><span class="nx">scene</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">stats = </span><span class="nx">stats</span>
+
+
+<span class="nx">init</span><span class="p">()</span>
+
+<span class="nv">animate = </span><span class="nf">-&gt;</span>
+  <span class="nx">requestAnimationFrame</span> <span class="nx">animate</span>
+  <span class="nx">render</span><span class="p">()</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">stats</span><span class="o">?</span><span class="p">.</span><span class="nx">update</span><span class="p">()</span>
+
+<span class="nv">render = </span><span class="nf">-&gt;</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">renderer</span><span class="p">.</span><span class="nx">render</span> <span class="nb">window</span><span class="p">.</span><span class="nx">scene</span><span class="p">,</span> <span class="nb">window</span><span class="p">.</span><span class="nx">camera</span>
+
+
+<span class="nb">window</span><span class="p">.</span><span class="nx">controls</span><span class="p">.</span><span class="nx">addEventListener</span> <span class="s">&#39;change&#39;</span><span class="p">,</span> <span class="nx">render</span></pre></div></div>                      </li>                              <li id="section-2">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>                           
+
+<h3>The initial splash screen</h3>
+
+<p>HTML containing instructions and key bindings</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="nv">INSTRUCTIONS = </span><span class="s">&quot;&quot;&quot;</span>
+<span class="s">&quot;&quot;&quot;</span></pre></div></div>                      </li>                              <li id="section-3">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>                           
+
+<h3>The Tracer</h3>
+
+<p>A tracer option simply captures a list of scenes, consisting of faces, edges
+and points and provides methods for displaying these scenes by updating the
+ThreeJS scene graph and some DOM elements. Could be written much shorter.</p>
+
+             </div>                      </li>                              <li id="section-4">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>                           
+
+<p>compensate for dynamic typing ;-)</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="nv">isVector = </span><span class="nf">(a) -&gt;</span> <span class="nx">a</span> <span class="k">instanceof</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span>
+
+<span class="nv">isFace = </span><span class="nf">(t) -&gt;</span> <span class="nx">t</span> <span class="k">instanceof</span> <span class="nx">Face</span>
+
+
+<span class="k">class</span> <span class="nx">Tracer</span>
+  <span class="nv">COLOR_EDGE_START = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Color</span> <span class="mh">0xff0000</span>
+  <span class="nv">COLOR_EDGE_END = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Color</span> <span class="mh">0x0000ff</span>
+
+  <span class="nv">MATERIAL_PARTICLE_DEFAULT = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ParticleBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">color: </span><span class="mh">0x0000ff</span>
+    <span class="nv">size: </span><span class="mi">40</span>
+  <span class="p">}</span>
+
+  <span class="nv">MATERIAL_PARTICLE_RED = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ParticleBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">color: </span><span class="mh">0xff0000</span>
+    <span class="nv">size: </span><span class="mi">80</span>
+  <span class="p">}</span>
+
+  <span class="nv">MATERIAL_ARROW = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">color: </span><span class="mh">0xff0000</span>
+  <span class="p">}</span>
+
+  <span class="nv">MATERIAL_FACE_OUTER = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">color: </span><span class="mh">0xffff00</span>
+    <span class="nv">transparent: </span><span class="kc">true</span>
+    <span class="nv">opacity: </span><span class="p">.</span><span class="mi">5</span>
+  <span class="p">}</span>
+
+  <span class="nv">MATERIAL_FACE_INNER = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">color: </span><span class="mh">0xff0088</span>
+    <span class="nv">transparent: </span><span class="kc">true</span>
+    <span class="nv">opacity: </span><span class="p">.</span><span class="mi">5</span>
+    <span class="nv">side: </span><span class="nx">THREE</span><span class="p">.</span><span class="nx">BackSide</span>
+  <span class="p">}</span>
+
+  <span class="nv">MATERIAL_FACE_HIGHLIGHT = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">color: </span><span class="mh">0xffff00</span>
+    <span class="nv">transparent: </span><span class="kc">true</span>
+    <span class="nv">opacity: </span><span class="p">.</span><span class="mi">75</span>
+  <span class="p">}</span>
+
+  <span class="nv">MATERIAL_FACE_WIRE = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">MeshBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">color: </span><span class="mh">0x888888</span>
+    <span class="nv">transparent: </span><span class="kc">true</span>
+    <span class="nv">opacity: </span><span class="p">.</span><span class="mi">5</span>
+    <span class="nv">wireframe: </span><span class="kc">true</span>
+    <span class="nv">depthTest: </span><span class="kc">false</span>
+  <span class="p">}</span>
+
+  <span class="nv">MATERIAL_LINE = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">LineBasicMaterial</span> <span class="p">{</span>
+    <span class="nv">linewidth: </span><span class="mi">4</span><span class="p">,</span>
+    <span class="nv">vertexColors: </span><span class="nx">THREE</span><span class="p">.</span><span class="nx">VertexColors</span>
+  <span class="p">}</span>
+
+  <span class="nv">constructor: </span><span class="nf">-&gt;</span>
+    <span class="vi">@scenes = </span><span class="p">[]</span>
+    <span class="vi">@index = </span><span class="mi">0</span>
+    <span class="vi">@$subtitle = </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#subtitle&#39;</span><span class="p">)</span>
+    <span class="vi">@$el = </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#trace&#39;</span><span class="p">)</span>
+    <span class="nx">@$el</span><span class="p">.</span><span class="nx">empty</span><span class="p">()</span>
+    <span class="nx">@$el</span><span class="p">.</span><span class="nx">css</span>
+      <span class="nv">position: </span><span class="s">&#39;absolute&#39;</span>
+      <span class="nv">bottom: </span><span class="s">&#39;1em&#39;</span>
+      <span class="nv">top: </span><span class="s">&#39;0em&#39;</span>
+      <span class="nv">left: </span><span class="s">&#39;1em&#39;</span>
+      <span class="nv">overflow: </span><span class="s">&#39;hidden&#39;</span></pre></div></div>                      </li>                              <li id="section-5">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>                           
+
+<p>convert Quickhull vertices to ThreeJS vertices</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">getVertices: </span><span class="nf">(vertices, options = {}) -&gt;</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">vertices</span><span class="p">,</span> <span class="nx">isVector</span><span class="p">)</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span> <span class="s">&quot;invalid vertex&quot;</span>
+      <span class="k">return</span>
+
+    <span class="nv">m = </span><span class="nx">options</span><span class="p">.</span><span class="nx">material</span> <span class="o">or</span> <span class="nx">MATERIAL_PARTICLE_DEFAULT</span>
+    <span class="nv">g = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Geometry</span>
+    <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">push</span> <span class="nx">vertices</span><span class="p">...</span>
+    <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">ParticleSystem</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">m</span></pre></div></div>                      </li>                              <li id="section-6">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>                           
+
+<p>convert Quickhull edges to ThreeJS edges, color them as a gradient
+to detect discontinuities</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">getEdges: </span><span class="nf">(edges, options = {}) -&gt;</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">edges</span><span class="p">,</span> <span class="nf">({a, b}) -&gt;</span> <span class="nx">isVector</span><span class="p">(</span><span class="nx">a</span><span class="p">)</span> <span class="o">and</span> <span class="nx">isVector</span><span class="p">(</span><span class="nx">b</span><span class="p">))</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span> <span class="s">&quot;invalid edge&quot;</span>
+      <span class="k">return</span>
+
+    <span class="nv">obj = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Object3D</span>
+    <span class="nx">edges</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">({a, b}, i) -&gt;</span>
+      <span class="nv">g = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Geometry</span>
+      <span class="nv">cA = </span><span class="nx">COLOR_EDGE_START</span><span class="p">.</span><span class="nx">clone</span><span class="p">().</span><span class="nx">lerp</span><span class="p">(</span><span class="nx">COLOR_EDGE_END</span><span class="p">,</span> <span class="nx">i</span> <span class="o">/</span> <span class="nx">edges</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+      <span class="nv">cB = </span><span class="nx">COLOR_EDGE_START</span><span class="p">.</span><span class="nx">clone</span><span class="p">().</span><span class="nx">lerp</span><span class="p">(</span><span class="nx">COLOR_EDGE_END</span><span class="p">,</span> <span class="p">(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="nx">edges</span><span class="p">.</span><span class="nx">length</span><span class="p">)</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">push</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">colors</span><span class="p">.</span><span class="nx">push</span> <span class="nx">cA</span><span class="p">,</span> <span class="nx">cB</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Line</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">MATERIAL_LINE</span>
+    <span class="nx">obj</span></pre></div></div>                      </li>                              <li id="section-7">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>                           
+
+<p>convert Quickhull faces to ThreeJS faces, color front and back diffrently
+to detect holes and faces with wrong orientation</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">getFaces: </span><span class="nf">(faces, options = {}) -&gt;</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">all</span><span class="p">(</span><span class="nx">faces</span><span class="p">,</span> <span class="nx">isFace</span><span class="p">)</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span> <span class="s">&quot;invalid face&quot;</span>
+      <span class="k">return</span>
+
+    <span class="nv">matOuter = </span><span class="nx">options</span><span class="p">.</span><span class="nx">materialOuter</span> <span class="o">or</span> <span class="nx">MATERIAL_FACE_OUTER</span>
+    <span class="nv">matInner = </span><span class="nx">options</span><span class="p">.</span><span class="nx">materialInner</span> <span class="o">or</span> <span class="nx">MATERIAL_FACE_INNER</span>
+    <span class="nv">matWire = </span><span class="nx">options</span><span class="p">.</span><span class="nx">materialWire</span> <span class="o">or</span> <span class="nx">MATERIAL_FACE_WIRE</span>
+
+    <span class="nv">g = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Geometry</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">faces</span><span class="p">,</span> <span class="nf">(f) -&gt;</span> <span class="o">not</span> <span class="nx">f</span><span class="p">.</span><span class="nx">deleted</span><span class="p">).</span><span class="nx">forEach</span> <span class="nf">(f) -&gt;</span>
+      <span class="k">if</span> <span class="nx">f</span><span class="p">.</span><span class="nx">deleted</span> <span class="k">then</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;deleted face!&quot;</span>
+      <span class="nv">n = </span><span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">length</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">vertices</span><span class="p">.</span><span class="nx">push</span> <span class="nx">f</span><span class="p">.</span><span class="nx">a</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">b</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">c</span>
+      <span class="nx">g</span><span class="p">.</span><span class="nx">faces</span><span class="p">.</span><span class="nx">push</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Face3</span> <span class="nx">n</span><span class="p">,</span> <span class="nx">n</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="nx">n</span><span class="o">+</span><span class="mi">2</span>
+
+    <span class="nv">obj = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Object3D</span>
+    <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">matOuter</span>
+    <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">matInner</span>
+    <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Mesh</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">matWire</span>
+
+    <span class="nx">obj</span></pre></div></div>                      </li>                              <li id="section-8">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>                           
+
+<p>create a new scene object</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">trace: </span><span class="nf">(message, options) -&gt;</span>
+    <span class="nv">obj = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Object3D</span>
+
+    <span class="p">{</span><span class="nx">vertices</span><span class="p">,</span> <span class="nx">edges</span><span class="p">,</span> <span class="nx">faces</span><span class="p">,</span>
+      <span class="nx">hiVertices</span><span class="p">,</span> <span class="nx">hiEdges</span><span class="p">,</span> <span class="nx">hiFaces</span><span class="p">,</span>
+      <span class="nx">subtitle</span><span class="p">}</span> <span class="o">=</span> <span class="nx">options</span>
+
+    <span class="k">if</span> <span class="nx">vertices</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@getVertices</span> <span class="nx">_</span><span class="p">.</span><span class="nx">difference</span> <span class="nx">vertices</span><span class="p">,</span> <span class="p">(</span><span class="nx">hiVertices</span> <span class="o">or</span> <span class="p">[])</span>
+
+    <span class="k">if</span> <span class="nx">edges</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@getEdges</span> <span class="nx">_</span><span class="p">.</span><span class="nx">difference</span> <span class="nx">edges</span><span class="p">,</span> <span class="p">(</span><span class="nx">hiEdges</span> <span class="o">or</span> <span class="p">[])</span>
+
+    <span class="k">if</span> <span class="nx">faces</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@getFaces</span> <span class="nx">_</span><span class="p">.</span><span class="nx">difference</span> <span class="nx">faces</span><span class="p">,</span> <span class="p">(</span><span class="nx">hiFaces</span> <span class="o">or</span> <span class="p">[])</span>
+
+    <span class="k">if</span> <span class="nx">hiVertices</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@getVertices</span> <span class="nx">hiVertices</span><span class="p">,</span> <span class="nv">material: </span><span class="nx">MATERIAL_PARTICLE_RED</span>
+
+    <span class="k">if</span> <span class="nx">hiFaces</span>
+      <span class="nx">obj</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@getFaces</span> <span class="nx">hiFaces</span><span class="p">,</span> <span class="nv">materialOuter: </span><span class="nx">MATERIAL_FACE_HIGHLIGHT</span>
+
+    <span class="nv">$el = </span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;div&gt;&quot;</span><span class="p">).</span><span class="nx">append</span><span class="p">(</span><span class="nx">$</span><span class="p">(</span><span class="s">&quot;&lt;span&gt;&quot;</span><span class="p">).</span><span class="nx">text</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">@scenes</span><span class="p">.</span><span class="nx">length</span><span class="si">}</span><span class="s">. </span><span class="si">#{</span><span class="nx">message</span><span class="si">}</span><span class="s">&quot;</span><span class="p">)</span>
+    <span class="nx">$el</span><span class="p">.</span><span class="nx">css</span> <span class="nv">color: </span><span class="s">&#39;#888&#39;</span>
+
+    <span class="nx">@$el</span><span class="p">.</span><span class="nx">append</span> <span class="nx">$el</span>
+    <span class="nx">@scenes</span><span class="p">.</span><span class="nx">push</span> <span class="p">{</span><span class="nx">message</span><span class="p">,</span> <span class="nx">obj</span><span class="p">,</span> <span class="nx">$el</span><span class="p">,</span> <span class="nx">subtitle</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="nx">@scenes</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">2</span>
+      <span class="vi">@index = </span><span class="mi">0</span>
+      <span class="nx">@showScene</span><span class="p">()</span>
+
+  <span class="nv">showNext: </span><span class="nf">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@index</span> <span class="o">&lt;</span> <span class="nx">@scenes</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span>
+      <span class="nx">@index</span> <span class="o">+=</span> <span class="mi">1</span>
+      <span class="nx">@showScene</span><span class="p">()</span>
+
+  <span class="nv">showPrev: </span><span class="nf">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@index</span> <span class="o">&gt;</span> <span class="mi">0</span>
+      <span class="nx">@index</span> <span class="o">-=</span> <span class="mi">1</span>
+      <span class="nx">@showScene</span><span class="p">()</span>
+
+  <span class="nv">showFirst: </span><span class="nf">-&gt;</span>
+    <span class="vi">@index = </span><span class="mi">0</span>
+    <span class="nx">@showScene</span><span class="p">()</span>
+
+  <span class="nv">showLast: </span><span class="nf">-&gt;</span>
+    <span class="vi">@index = </span><span class="nx">@scenes</span><span class="p">.</span><span class="nx">length</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="nx">@showScene</span><span class="p">()</span>
+
+  <span class="nv">hideScene: </span><span class="nf">-&gt;</span>
+    <span class="k">if</span> <span class="nx">@s</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">sceneRoot</span><span class="p">.</span><span class="nx">remove</span> <span class="nx">@s</span><span class="p">.</span><span class="nx">obj</span>
+      <span class="nx">@s</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">css</span> <span class="nv">color: </span><span class="s">&#39;#888&#39;</span>
+      <span class="nx">@s</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="s">&quot;.subtitle&quot;</span><span class="p">).</span><span class="nx">hide</span><span class="p">()</span>
+
+  <span class="nv">showScene: </span><span class="nf">-&gt;</span>
+    <span class="nx">@hideScene</span><span class="p">()</span>
+    <span class="vi">@s = </span><span class="nx">@scenes</span><span class="p">[</span><span class="nx">@index</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nx">@s</span>
+      <span class="nb">window</span><span class="p">.</span><span class="nx">sceneRoot</span><span class="p">.</span><span class="nx">add</span> <span class="nx">@s</span><span class="p">.</span><span class="nx">obj</span>
+      <span class="nx">@s</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">css</span> <span class="nv">color: </span><span class="s">&#39;#444&#39;</span>
+      <span class="nx">@$subtitle</span><span class="p">.</span><span class="nx">html</span> <span class="nx">@s</span><span class="p">.</span><span class="nx">subtitle</span> <span class="o">or</span> <span class="s">&quot;&quot;</span>
+      <span class="nx">@scenes</span><span class="p">[</span><span class="nb">Math</span><span class="p">.</span><span class="nx">max</span> <span class="nx">@index</span> <span class="o">-</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">].</span><span class="nx">$el</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="mi">0</span><span class="p">).</span><span class="nx">scrollIntoView</span><span class="p">()</span>
+
+  <span class="nv">clear: </span><span class="nf">-&gt;</span>
+    <span class="nx">@hideScene</span><span class="p">()</span></pre></div></div>                      </li>                              <li id="section-9">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>                           
+
+<h1>Quickhull</h1>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="nv">TRACE_INITIAL = </span><span class="kc">true</span>
+
+<span class="nv">TRACE_HORIZON = </span><span class="kc">true</span>
+
+<span class="nv">TRACE_MANY_HORIZON_PATHS = </span><span class="kc">false</span>
+
+<span class="nv">TRACE_TERMINATE = </span><span class="kc">false</span>
+
+<span class="nv">TRACE_NEW_FACE_EACH = </span><span class="kc">false</span>
+
+<span class="nv">TRACE_NEW_FACES = </span><span class="kc">true</span></pre></div></div>                      </li>                              <li id="section-10">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>                           
+
+<h3>Face Edge</h3>
+
+<p>Represents an edge between two points of a hull face.
+Keeps track of the face as well as the face on the opposite side, which is
+needed when stitching up faces.</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="k">class</span> <span class="nx">FaceLink</span>
+  <span class="nv">constructor: </span><span class="nf">(face, @a, @b) -&gt;</span>
+    <span class="vi">@from = </span><span class="nx">face</span>
+    <span class="vi">@to = </span><span class="kc">null</span>
+
+  <span class="nv">reverseOf: </span><span class="nf">({a, b}) -&gt;</span>
+    <span class="p">(</span><span class="nx">@a</span> <span class="o">==</span> <span class="nx">b</span><span class="p">)</span> <span class="o">and</span> <span class="p">(</span><span class="nx">@b</span> <span class="o">==</span> <span class="nx">a</span><span class="p">)</span></pre></div></div>                      </li>                              <li id="section-11">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>                           
+
+<h3>Face</h3>
+
+<p>Represents a hull face.</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="k">class</span> <span class="nx">Face</span>
+  <span class="nv">constructor: </span><span class="nf">(@a, @b, @c) -&gt;</span>
+    <span class="vi">@triangle = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Triangle</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span>
+    <span class="vi">@plane = </span><span class="nx">@triangle</span><span class="p">.</span><span class="nx">plane</span><span class="p">()</span>
+    <span class="vi">@links = </span><span class="p">[</span>
+      <span class="vi">@linkAB = </span><span class="k">new</span> <span class="nx">FaceLink</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">@a</span><span class="p">,</span> <span class="nx">@b</span>
+      <span class="vi">@linkBC = </span><span class="k">new</span> <span class="nx">FaceLink</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">@b</span><span class="p">,</span> <span class="nx">@c</span>
+      <span class="vi">@linkCA = </span><span class="k">new</span> <span class="nx">FaceLink</span> <span class="nx">@</span><span class="p">,</span> <span class="nx">@c</span><span class="p">,</span> <span class="nx">@a</span>
+    <span class="p">]</span>
+
+    <span class="vi">@assignedPoints = </span><span class="p">[]</span>
+    <span class="vi">@furthest = </span><span class="p">{</span><span class="nv">point: </span><span class="kc">null</span><span class="p">,</span> <span class="nv">distance: </span><span class="o">-</span><span class="kc">Infinity</span><span class="p">}</span>
+
+    <span class="vi">@deleted = </span><span class="kc">false</span>
+    <span class="vi">@visited = </span><span class="kc">false</span>
+
+  <span class="nv">hasPoint: </span><span class="nf">(point) -&gt;</span>
+    <span class="p">(</span><span class="nx">point</span> <span class="o">==</span> <span class="nx">@a</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nx">point</span> <span class="o">==</span> <span class="nx">@b</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nx">point</span> <span class="o">==</span> <span class="nx">@c</span><span class="p">)</span>
+
+  <span class="nv">distance: </span><span class="nf">(point) -&gt;</span>
+    <span class="k">if</span> <span class="nx">@hasPoint</span> <span class="nx">point</span>
+      <span class="mi">0</span>
+    <span class="k">else</span>
+      <span class="nx">@plane</span><span class="p">.</span><span class="nx">distanceToPoint</span> <span class="nx">point</span></pre></div></div>                      </li>                              <li id="section-12">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>                           
+
+<p>normalLine: only needed for visualization</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">normalLine: </span><span class="nf">-&gt;</span>
+    <span class="nv">m = </span><span class="nx">@triangle</span><span class="p">.</span><span class="nx">midpoint</span><span class="p">()</span>
+    <span class="nv">n = </span><span class="nx">@triangle</span><span class="p">.</span><span class="nx">midpoint</span><span class="p">().</span><span class="nx">add</span><span class="p">(</span>
+      <span class="nx">@triangle</span><span class="p">.</span><span class="nx">normal</span><span class="p">().</span><span class="nx">normalize</span><span class="p">().</span><span class="nx">multiplyScalar</span><span class="p">(</span><span class="mi">50</span><span class="p">))</span>
+    <span class="p">{</span><span class="nv">a: </span><span class="nx">m</span><span class="p">,</span> <span class="nv">b: </span><span class="nx">n</span><span class="p">}</span>
+
+  <span class="nv">visibleBy: </span><span class="nf">(point) -&gt;</span>
+    <span class="nx">@hasPoint</span><span class="p">(</span><span class="nx">point</span><span class="p">)</span> <span class="o">or</span> <span class="p">(</span><span class="nx">@distance</span><span class="p">(</span><span class="nx">point</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+
+  <span class="nv">connect: </span><span class="nf">(otherFace, link, otherLink) -&gt;</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">link</span><span class="p">.</span><span class="nx">reverseOf</span> <span class="nx">otherLink</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;can&#39;t connect with non-reverse link&quot;</span>
+
+    <span class="nv">link.to = </span><span class="nx">otherFace</span>
+    <span class="nv">otherLink.to = </span><span class="nx">@</span>
+
+    <span class="nv">link.inverse = </span><span class="nx">otherLink</span>
+    <span class="nv">otherLink.inverse = </span><span class="nx">link</span>
+
+  <span class="nv">assign: </span><span class="nf">(point) -&gt;</span>
+    <span class="k">if</span> <span class="nx">@hasPoint</span> <span class="nx">point</span>
+      <span class="kc">true</span>
+    <span class="k">else</span>
+      <span class="nv">d = </span><span class="nx">@distance</span> <span class="nx">point</span>
+      <span class="k">if</span> <span class="nx">d</span> <span class="o">&gt;=</span> <span class="mi">0</span>
+        <span class="nx">@assignedPoints</span><span class="p">.</span><span class="nx">push</span> <span class="nx">point</span>
+
+        <span class="k">if</span> <span class="nx">d</span> <span class="o">&gt;</span> <span class="nx">@furthest</span><span class="p">.</span><span class="nx">distance</span>
+          <span class="vi">@furthest.distance = </span><span class="nx">d</span>
+          <span class="vi">@furthest.point = </span><span class="nx">point</span>
+        <span class="kc">true</span>
+
+      <span class="k">else</span>
+        <span class="kc">false</span>
+
+
+
+<span class="nv">assignPoints = </span><span class="nf">(faces, points) -&gt;</span>
+  <span class="nx">points</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(p) -&gt;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">any</span> <span class="nx">faces</span><span class="p">,</span> <span class="nf">(f) -&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">assign</span> <span class="nx">p</span>
+
+<span class="nv">checkFace = </span><span class="nf">(f) -&gt;</span>
+  <span class="nv">error = </span><span class="kc">false</span>
+  <span class="nv">setError = </span><span class="nf">(msg) -&gt;</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="nx">msg</span>
+    <span class="nv">error = </span><span class="kc">true</span>
+
+  <span class="k">if</span> <span class="nx">f</span><span class="p">.</span><span class="nx">deleted</span>
+    <span class="k">return</span>
+
+  <span class="nx">f</span><span class="p">.</span><span class="nx">links</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(l, j) -&gt;</span>
+    <span class="nv">str = </span><span class="s">&quot;f.links[</span><span class="si">#{</span><span class="nx">j</span><span class="si">}</span><span class="s">]&quot;</span>
+    <span class="k">if</span> <span class="nx">l</span><span class="p">.</span><span class="nx">horizon</span> <span class="o">==</span> <span class="kc">true</span>
+      <span class="nx">setError</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">str</span><span class="si">}</span><span class="s">.horizon == true&quot;</span>
+    <span class="k">if</span> <span class="nx">l</span><span class="p">.</span><span class="nx">from</span> <span class="o">!=</span> <span class="nx">f</span>
+      <span class="nx">setError</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">str</span><span class="si">}</span><span class="s">.from != f&quot;</span>
+    <span class="k">if</span> <span class="nx">l</span><span class="p">.</span><span class="nx">inverse</span><span class="p">.</span><span class="nx">to</span> <span class="o">!=</span> <span class="nx">f</span>
+      <span class="nx">setError</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">str</span><span class="si">}</span><span class="s">.inverse.to != f&quot;</span>
+    <span class="k">if</span> <span class="nx">l</span><span class="p">.</span><span class="nx">inverse</span><span class="p">.</span><span class="nx">a</span> <span class="o">!=</span> <span class="nx">l</span><span class="p">.</span><span class="nx">b</span>
+      <span class="nx">setError</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">str</span><span class="si">}</span><span class="s">.inverse.a != l.b&quot;</span>
+    <span class="k">if</span> <span class="nx">l</span><span class="p">.</span><span class="nx">inverse</span><span class="p">.</span><span class="nx">b</span> <span class="o">!=</span> <span class="nx">l</span><span class="p">.</span><span class="nx">a</span>
+      <span class="nx">setError</span> <span class="s">&quot;</span><span class="si">#{</span><span class="nx">str</span><span class="si">}</span><span class="s">.inverse.b != l.a&quot;</span>
+
+
+    <span class="nv">backLinks = </span><span class="nx">_</span><span class="p">.</span><span class="nx">pluck</span> <span class="nx">l</span><span class="p">.</span><span class="nx">to</span><span class="p">.</span><span class="nx">links</span><span class="p">,</span> <span class="s">&#39;to&#39;</span>
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span> <span class="nx">backLinks</span><span class="p">,</span> <span class="nx">f</span>
+      <span class="nx">setError</span> <span class="s">&quot;no reflexive link&quot;</span><span class="p">,</span> <span class="nx">f</span><span class="p">,</span> <span class="nx">backLinks</span>
+
+  <span class="k">if</span> <span class="nx">error</span> <span class="k">then</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;checkFace failed&quot;</span>
+
+
+
+<span class="nv">checkHorizon = </span><span class="nf">(horizon) -&gt;</span>
+  <span class="nx">_</span><span class="p">.</span><span class="nx">every</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">horizon</span><span class="p">,</span> <span class="nf">(h, i) -&gt;</span>
+    <span class="nv">next = </span><span class="nx">horizon</span><span class="p">[(</span><span class="nx">i</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nx">horizon</span><span class="p">.</span><span class="nx">length</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nx">h</span><span class="p">.</span><span class="nx">b</span> <span class="o">!=</span> <span class="nx">next</span><span class="p">.</span><span class="nx">a</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">error</span> <span class="s">&quot;discontinuous horizon&quot;</span><span class="p">,</span> <span class="nx">h</span><span class="p">,</span> <span class="nx">next</span>
+      <span class="kc">false</span>
+    <span class="k">else</span>
+      <span class="kc">true</span>
+
+<span class="nv">checkHull = </span><span class="nf">(tracer, hull, points) -&gt;</span>
+  <span class="nv">valid = </span><span class="kc">true</span>
+  <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">hull</span><span class="p">,</span> <span class="nf">(f) -&gt;</span>
+    <span class="nx">_</span><span class="p">.</span><span class="nx">each</span> <span class="nx">points</span><span class="p">,</span> <span class="nf">(p) -&gt;</span>
+      <span class="k">if</span> <span class="nx">visible</span> <span class="nx">face</span><span class="p">,</span> <span class="nx">point</span>
+        <span class="nv">valid = </span><span class="kc">false</span>
+        <span class="nx">tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;OUTSIDE POINT&quot;</span><span class="p">,</span>
+          <span class="nv">faces: </span><span class="p">[</span><span class="nx">face</span><span class="p">]</span>
+          <span class="nv">vertices: </span><span class="p">[</span><span class="nx">point</span><span class="p">]</span>
+
+  <span class="nx">valid</span></pre></div></div>                      </li>                              <li id="section-13">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>                           
+
+<h1>The actual Quickhull solver</h1>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="k">class</span> <span class="nx">QuickhullSolver</span>
+  <span class="nv">constructor: </span><span class="nf">(@tracer) -&gt;</span>
+    <span class="vi">@hull = </span><span class="p">[]</span></pre></div></div>                      </li>                              <li id="section-14">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>                           
+
+<p>find some sane initial points</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">getInitialPoints: </span><span class="nf">(points) -&gt;</span>
+    <span class="nv">getattr = </span><span class="nf">(a) -&gt;</span> <span class="nf">(p) -&gt;</span> <span class="nx">p</span><span class="p">[</span><span class="nx">a</span><span class="p">]</span>
+
+    <span class="nv">pointsCopy = </span><span class="nx">_</span><span class="p">.</span><span class="nx">clone</span> <span class="nx">points</span></pre></div></div>                      </li>                              <li id="section-15">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>                           
+
+<p>find extreme points in each dimension</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nv">extremes = </span><span class="p">[]</span>
+    <span class="nv">removeFromPoints = </span><span class="nf">(point) -&gt;</span>
+      <span class="nv">pointsCopy = </span><span class="nx">_</span><span class="p">.</span><span class="nx">without</span> <span class="nx">pointsCopy</span><span class="p">,</span> <span class="nx">point</span>
+      <span class="nx">point</span>
+
+    <span class="nx">extremes</span><span class="p">.</span><span class="nx">push</span> <span class="nx">removeFromPoints</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">min</span> <span class="nx">pointsCopy</span><span class="p">,</span> <span class="nx">getattr</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="nx">extremes</span><span class="p">.</span><span class="nx">push</span> <span class="nx">removeFromPoints</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">min</span> <span class="nx">pointsCopy</span><span class="p">,</span> <span class="nx">getattr</span> <span class="s">&#39;y&#39;</span><span class="p">)</span>
+    <span class="nx">extremes</span><span class="p">.</span><span class="nx">push</span> <span class="nx">removeFromPoints</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">min</span> <span class="nx">pointsCopy</span><span class="p">,</span> <span class="nx">getattr</span> <span class="s">&#39;z&#39;</span><span class="p">)</span>
+    <span class="nx">extremes</span><span class="p">.</span><span class="nx">push</span> <span class="nx">removeFromPoints</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">max</span> <span class="nx">pointsCopy</span><span class="p">,</span> <span class="nx">getattr</span> <span class="s">&#39;x&#39;</span><span class="p">)</span>
+    <span class="nx">extremes</span><span class="p">.</span><span class="nx">push</span> <span class="nx">removeFromPoints</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">max</span> <span class="nx">pointsCopy</span><span class="p">,</span> <span class="nx">getattr</span> <span class="s">&#39;y&#39;</span><span class="p">)</span>
+    <span class="nx">extremes</span><span class="p">.</span><span class="nx">push</span> <span class="nx">removeFromPoints</span><span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">max</span> <span class="nx">pointsCopy</span><span class="p">,</span> <span class="nx">getattr</span> <span class="s">&#39;z&#39;</span><span class="p">)</span>
+
+    <span class="nv">cartesian = </span><span class="nx">_</span><span class="p">.</span><span class="nx">flatten</span><span class="p">(</span>
+      <span class="p">(</span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">extremes</span><span class="p">,</span> <span class="nf">(p1) -&gt;</span> <span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">extremes</span><span class="p">,</span> <span class="nf">(p2) -&gt;</span> <span class="p">[</span><span class="nx">p1</span><span class="p">,</span> <span class="nx">p2</span><span class="p">]),</span> <span class="kc">true</span>
+    <span class="p">)</span></pre></div></div>                      </li>                              <li id="section-16">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>                           
+
+<p>find point combination with greatest distance</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="p">[</span><span class="nx">m1</span><span class="p">,</span> <span class="nx">m2</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">max</span> <span class="nx">cartesian</span><span class="p">,</span> <span class="nf">([p1, p2]) -&gt;</span>
+      <span class="nx">p1</span><span class="p">.</span><span class="nx">distanceTo</span> <span class="nx">p2</span></pre></div></div>                      </li>                              <li id="section-17">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>                           
+
+<p>find point with greatest distance to those two points</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nv">m3 = </span><span class="nx">_</span><span class="p">.</span><span class="nx">max</span> <span class="nx">extremes</span><span class="p">,</span> <span class="nf">(p3) -&gt;</span>
+      <span class="nv">q = </span><span class="nx">p3</span><span class="p">.</span><span class="nx">clone</span><span class="p">().</span><span class="nx">sub</span><span class="p">(</span><span class="nx">m1</span><span class="p">)</span>
+      <span class="nx">q</span><span class="p">.</span><span class="nx">cross</span><span class="p">(</span><span class="nx">m2</span><span class="p">).</span><span class="nx">length</span><span class="p">()</span>
+
+    <span class="p">[</span><span class="nx">m1</span><span class="p">,</span> <span class="nx">m2</span><span class="p">,</span> <span class="nx">m3</span><span class="p">]</span></pre></div></div>                      </li>                              <li id="section-18">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>                           
+
+<h3>get convex hull of faces</h3>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">getHull: </span><span class="nf">(points) -&gt;</span>
+    <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;quickhull start&quot;</span><span class="p">,</span>
+      <span class="nv">vertices: </span><span class="nx">points</span>
+      <span class="nv">subtitle: </span><span class="nx">$</span><span class="p">(</span><span class="s">&#39;#instructions&#39;</span><span class="p">).</span><span class="nx">html</span><span class="p">()</span>
+
+    <span class="p">[</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">]</span> <span class="o">=</span> <span class="nx">@getInitialPoints</span> <span class="nx">points</span>
+
+    <span class="nv">f = </span><span class="k">new</span> <span class="nx">Face</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span>
+    <span class="nv">g = </span><span class="k">new</span> <span class="nx">Face</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">c</span><span class="p">,</span> <span class="nx">b</span></pre></div></div>                      </li>                              <li id="section-19">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>                           
+
+<p>assign points to initial hull hull</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">assignPoints</span> <span class="p">[</span><span class="nx">f</span><span class="p">,</span> <span class="nx">g</span><span class="p">],</span> <span class="nx">points</span></pre></div></div>                      </li>                              <li id="section-20">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>                           
+
+<p>connect initial faces to each other</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">f</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">linkAB</span><span class="p">,</span> <span class="nx">g</span><span class="p">.</span><span class="nx">linkCA</span>
+    <span class="nx">f</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">linkBC</span><span class="p">,</span> <span class="nx">g</span><span class="p">.</span><span class="nx">linkBC</span>
+    <span class="nx">f</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">g</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">linkCA</span><span class="p">,</span> <span class="nx">g</span><span class="p">.</span><span class="nx">linkAB</span></pre></div></div>                      </li>                              <li id="section-21">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>                           
+
+<p>basic hull</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="vi">@hull = </span><span class="p">[</span><span class="nx">f</span><span class="p">,</span> <span class="nx">g</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nx">TRACE_INITIAL</span>
+      <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;initial hull with normals&quot;</span><span class="p">,</span>
+        <span class="nv">faces: </span><span class="nx">@hull</span>
+        <span class="nv">edges: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">@hull</span><span class="p">,</span> <span class="nf">(f) -&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">normalLine</span><span class="p">()</span>
+
+    <span class="c1">#@ sanity check</span>
+    <span class="nx">@hull</span><span class="p">.</span><span class="nx">forEach</span> <span class="nx">checkFace</span></pre></div></div>                      </li>                              <li id="section-22">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>                           
+
+<p>recursive algorithm implemented with own stack</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nv">stack = </span><span class="p">[</span><span class="nx">g</span><span class="p">,</span> <span class="nx">f</span><span class="p">]</span>
+    <span class="k">while</span> <span class="nv">face = </span><span class="nx">stack</span><span class="p">.</span><span class="nx">shift</span><span class="p">()</span></pre></div></div>                      </li>                              <li id="section-23">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>                           
+
+<p>skip faces that have been discarded</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>      <span class="k">if</span> <span class="o">not</span> <span class="nx">face</span><span class="p">.</span><span class="nx">deleted</span></pre></div></div>                      </li>                              <li id="section-24">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>                           
+
+<p>try to expand the hull if face hasn't been deleted, add
+newly created faces to work queue</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>        <span class="nv">newFaces = </span><span class="nx">@expandHull</span> <span class="nx">face</span>
+        <span class="nx">stack</span><span class="p">.</span><span class="nx">push</span> <span class="nx">newFaces</span><span class="p">...</span>
+
+    <span class="k">if</span> <span class="nx">checkHull</span> <span class="nx">@hull</span><span class="p">,</span> <span class="nx">points</span>
+      <span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="s">&quot;checkHull successful&quot;</span>
+
+    <span class="nx">@hull</span></pre></div></div>                      </li>                              <li id="section-25">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>                           
+
+<h3>expand hull by creating new faces and removing old ones</h3>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">expandHull: </span><span class="nf">(face) -&gt;</span></pre></div></div>                      </li>                              <li id="section-26">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>                           
+
+<p>if the face has no points assigned, leave everything unchanged</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isEmpty</span> <span class="nx">face</span><span class="p">.</span><span class="nx">assignedPoints</span>
+      <span class="k">return</span>
+
+    <span class="nv">d = </span><span class="nx">face</span><span class="p">.</span><span class="nx">furthest</span><span class="p">.</span><span class="nx">point</span></pre></div></div>                      </li>                              <li id="section-27">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>                           
+
+<p>find horizon and list of visited faces</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="p">{</span><span class="nx">horizon</span><span class="p">,</span> <span class="nx">visited</span><span class="p">}</span> <span class="o">=</span> <span class="nx">@getHorizon</span> <span class="nx">face</span><span class="p">,</span> <span class="nx">d</span>
+
+    <span class="k">if</span> <span class="o">not</span> <span class="nx">checkHorizon</span> <span class="nx">horizon</span>
+      <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span> <span class="s">&quot;invalid horizon&quot;</span>
+
+    <span class="k">if</span> <span class="nx">TRACE_HORIZON</span>
+      <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;expand hull&quot;</span><span class="p">,</span>
+        <span class="nv">faces: </span><span class="nx">visited</span>
+        <span class="nv">hiFaces: </span><span class="p">[</span><span class="nx">face</span><span class="p">]</span>
+        <span class="nv">edges: </span><span class="nx">horizon</span>
+        <span class="nv">vertices: </span><span class="nx">face</span><span class="p">.</span><span class="nx">assignedPoints</span>
+        <span class="nv">hiVertices: </span><span class="p">[</span><span class="nx">d</span><span class="p">]</span>
+        <span class="nv">subtitle: </span><span class="s">&quot;find faces visible from furthest point&quot;</span></pre></div></div>                      </li>                              <li id="section-28">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>                           
+
+<p>Create new hull and reconnect faces properly. Because the horizon is
+continuous, all faces will have proper orientation.</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nv">newFaces = </span><span class="p">[]</span>
+    <span class="nv">prev = </span><span class="kc">null</span>
+    <span class="nx">horizon</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(link) =&gt;</span>
+      <span class="nv">link.horizon = </span><span class="kc">false</span> <span class="c1"># reset</span>
+      <span class="p">{</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">}</span> <span class="o">=</span> <span class="nx">link</span>
+      <span class="nv">f = </span><span class="k">new</span> <span class="nx">Face</span> <span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">d</span>
+      <span class="nx">f</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">link</span><span class="p">.</span><span class="nx">to</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">linkAB</span><span class="p">,</span> <span class="nx">link</span><span class="p">.</span><span class="nx">inverse</span>
+      <span class="k">if</span> <span class="nx">prev</span>
+        <span class="nx">prev</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">f</span><span class="p">,</span> <span class="nx">prev</span><span class="p">.</span><span class="nx">linkBC</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">linkCA</span>
+      <span class="nv">prev = </span><span class="nx">f</span>
+      <span class="nx">newFaces</span><span class="p">.</span><span class="nx">push</span> <span class="nx">f</span>
+
+    <span class="nx">prev</span><span class="p">.</span><span class="nx">connect</span> <span class="nx">newFaces</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nx">prev</span><span class="p">.</span><span class="nx">linkBC</span><span class="p">,</span> <span class="nx">newFaces</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="nx">linkCA</span></pre></div></div>                      </li>                              <li id="section-29">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>                           
+
+<p>re-assign points to newly created faces and delete visited faces</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">visited</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(f) -&gt;</span>
+      <span class="nx">assignPoints</span> <span class="nx">newFaces</span><span class="p">,</span> <span class="nx">f</span><span class="p">.</span><span class="nx">assignedPoints</span>
+      <span class="nv">f.assignedPoints = </span><span class="p">[]</span>
+      <span class="nv">f.deleted = </span><span class="kc">true</span>
+
+    <span class="k">if</span> <span class="nx">TRACE_NEW_FACE_EACH</span>
+      <span class="nx">newFaces</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(f) -&gt;</span>
+        <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;newFace&quot;</span><span class="p">,</span>
+          <span class="nv">faces: </span><span class="p">[</span><span class="nx">f</span><span class="p">]</span>
+          <span class="nv">vertices: </span><span class="nx">f</span><span class="p">.</span><span class="nx">assignedPoints</span>
+          <span class="nv">hiVertices:</span>
+            <span class="k">if</span> <span class="nx">f</span><span class="p">.</span><span class="nx">furthest</span><span class="p">.</span><span class="nx">point</span>
+              <span class="p">[</span><span class="nx">f</span><span class="p">.</span><span class="nx">furthest</span><span class="p">.</span><span class="nx">point</span><span class="p">]</span>
+            <span class="k">else</span>
+              <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="nx">TRACE_NEW_FACES</span>
+      <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;new faces&quot;</span><span class="p">,</span>
+        <span class="nv">vertices: </span><span class="p">[</span><span class="nx">d</span><span class="p">]</span>
+        <span class="nv">edges: </span><span class="nx">horizon</span>
+        <span class="nv">faces: </span><span class="nx">newFaces</span>
+        <span class="nv">subtitle: </span><span class="s">&quot;create new faces along the found horizon&quot;</span></pre></div></div>                      </li>                              <li id="section-30">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>                           
+
+<p>add new faces to hull</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">@hull</span><span class="p">.</span><span class="nx">push</span> <span class="nx">newFaces</span><span class="p">...</span>
+
+    <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;new hull&quot;</span><span class="p">,</span>
+      <span class="nv">faces: </span><span class="nx">@hull</span>
+      <span class="nv">vertices: </span><span class="nx">points</span>
+      <span class="nv">subtitle: </span><span class="s">&quot;</span><span class="si">#{</span><span class="nx">_</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="nx">@hull</span><span class="p">,</span> <span class="nf">(h) -&gt;</span> <span class="o">not</span> <span class="nx">h</span><span class="p">.</span><span class="nx">deleted</span><span class="p">).</span><span class="nx">length</span><span class="si">}</span><span class="s"> faces&quot;</span>
+
+    <span class="nx">@hull</span><span class="p">.</span><span class="nx">forEach</span> <span class="nx">checkFace</span>
+
+    <span class="nx">newFaces</span></pre></div></div>                      </li>                              <li id="section-31">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>                           
+
+<h3>Find boundary between visible and invisible faces</h3>
+
+<p>return as continuous list of FaceLinks creating a closed path</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>  <span class="nv">getHorizon: </span><span class="nf">(face, point) -&gt;</span>
+    <span class="nv">stack = </span><span class="p">[</span><span class="nx">face</span><span class="p">]</span>
+    <span class="nv">visited = </span><span class="p">[]</span>
+    <span class="nv">horizon = </span><span class="p">[]</span></pre></div></div>                      </li>                              <li id="section-32">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>                           
+
+<p>Because FaceLinks are not necessarily found in a continuous order,
+maintain a list of paths and add newly found link to the start or end of
+an existing path or create a new one.</p>
+
+<p>There probably is a better way to do this.</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nv">mergePaths = </span><span class="nf">(path, links) -&gt;</span>
+      <span class="k">if</span> <span class="nx">path</span><span class="p">.</span><span class="nx">length</span> <span class="o">==</span> <span class="mi">0</span>
+        <span class="nx">path</span><span class="p">.</span><span class="nx">push</span> <span class="nx">links</span><span class="p">...</span>
+        <span class="k">return</span> <span class="kc">true</span>
+
+      <span class="nv">pathStart = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span><span class="p">(</span><span class="nx">path</span><span class="p">).</span><span class="nx">a</span>
+      <span class="nv">pathEnd = </span><span class="nx">_</span><span class="p">.</span><span class="nx">last</span><span class="p">(</span><span class="nx">path</span><span class="p">).</span><span class="nx">b</span>
+
+      <span class="nv">linkStart = </span><span class="nx">_</span><span class="p">.</span><span class="nx">first</span><span class="p">(</span><span class="nx">links</span><span class="p">).</span><span class="nx">a</span>
+      <span class="nv">linkEnd = </span><span class="nx">_</span><span class="p">.</span><span class="nx">last</span><span class="p">(</span><span class="nx">links</span><span class="p">).</span><span class="nx">b</span>
+
+      <span class="k">if</span> <span class="nx">linkStart</span> <span class="o">==</span> <span class="nx">pathEnd</span>
+        <span class="nx">path</span><span class="p">.</span><span class="nx">push</span> <span class="nx">links</span><span class="p">...</span>
+      <span class="k">else</span> <span class="k">if</span> <span class="nx">linkEnd</span> <span class="o">==</span> <span class="nx">pathStart</span>
+        <span class="nx">path</span><span class="p">.</span><span class="nx">unshift</span> <span class="nx">links</span><span class="p">...</span>
+      <span class="k">else</span>
+        <span class="k">return</span> <span class="kc">false</span>
+
+      <span class="k">return</span> <span class="kc">true</span>
+
+    <span class="nv">horizonPaths = </span><span class="p">[]</span>
+
+    <span class="nv">addHorizon = </span><span class="nf">(links) =&gt;</span>
+      <span class="k">if</span> <span class="o">not</span> <span class="nx">_</span><span class="p">.</span><span class="nx">some</span><span class="p">(</span><span class="nx">horizonPaths</span><span class="p">,</span> <span class="nf">(path) -&gt;</span> <span class="nx">mergePaths</span> <span class="nx">path</span><span class="p">,</span> <span class="nx">links</span><span class="p">)</span>
+        <span class="nx">horizonPaths</span><span class="p">.</span><span class="nx">push</span> <span class="nx">links</span></pre></div></div>                      </li>                              <li id="section-33">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>                           
+
+<p>very rarely there are more than 2 paths to check</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>      <span class="k">if</span> <span class="nx">TRACE_MANY_HORIZON_PATHS</span>
+        <span class="k">if</span> <span class="nx">horizonPaths</span><span class="p">.</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">2</span>
+          <span class="nx">horizonPaths</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(links, i) -&gt;</span>
+            <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;horizon path </span><span class="si">#{</span><span class="nx">i</span><span class="si">}</span><span class="s">&quot;</span><span class="p">,</span>
+              <span class="nv">faces: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">links</span><span class="p">,</span> <span class="nf">(l) -&gt;</span> <span class="nx">l</span><span class="p">.</span><span class="nx">from</span>
+              <span class="nv">edges: </span><span class="nx">links</span></pre></div></div>                      </li>                              <li id="section-34">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>                           
+
+<p>graph search starting form passed face</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="k">while</span> <span class="nv">f = </span><span class="nx">stack</span><span class="p">.</span><span class="nx">pop</span><span class="p">()</span>
+      <span class="nv">f.visited = </span><span class="kc">true</span>
+      <span class="nx">visited</span><span class="p">.</span><span class="nx">push</span> <span class="nx">f</span>
+
+      <span class="nx">f</span><span class="p">.</span><span class="nx">links</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(l, i) =&gt;</span>
+        <span class="nv">l.horizon = </span><span class="o">not</span> <span class="nx">l</span><span class="p">.</span><span class="nx">to</span><span class="p">.</span><span class="nx">visibleBy</span><span class="p">(</span><span class="nx">point</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nx">l</span><span class="p">.</span><span class="nx">horizon</span></pre></div></div>                      </li>                              <li id="section-35">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>                           
+
+<p>if the face on the other side of the link is invisible, we have a
+horizon link</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>          <span class="nx">addHorizon</span> <span class="p">[</span><span class="nx">l</span><span class="p">]</span>
+        <span class="k">else</span></pre></div></div>                      </li>                              <li id="section-36">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>                           
+
+<p>otherwise we might have a new face to expand the search to</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>          <span class="k">if</span> <span class="o">not</span> <span class="nx">l</span><span class="p">.</span><span class="nx">to</span><span class="p">.</span><span class="nx">visited</span>
+            <span class="nx">stack</span><span class="p">.</span><span class="nx">push</span> <span class="nx">l</span><span class="p">.</span><span class="nx">to</span>
+            <span class="nv">l.to.visited = </span><span class="kc">true</span></pre></div></div>                      </li>                              <li id="section-37">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>                           
+
+<p>reset search state</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nx">visited</span><span class="p">.</span><span class="nx">forEach</span> <span class="nf">(f) -&gt;</span> <span class="nv">f.visited = </span><span class="kc">false</span></pre></div></div>                      </li>                              <li id="section-38">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>                           
+
+<p>collapse horizon into single path
+strictly speaking this is not guaranteed to terminate but it does</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="nv">horizon = </span><span class="p">[]</span>
+
+    <span class="k">while</span> <span class="nv">p = </span><span class="nx">horizonPaths</span><span class="p">.</span><span class="nx">pop</span><span class="p">()</span>
+      <span class="nx">mergePaths</span> <span class="nx">horizon</span><span class="p">,</span> <span class="nx">p</span></pre></div></div>                      </li>                              <li id="section-39">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>                           
+
+<p>return horizon and list of visited faces</p>
+
+             </div>                          <div class="content"><div class="highlight"><pre>    <span class="p">{</span><span class="nx">horizon</span><span class="p">,</span> <span class="nx">visited</span><span class="p">}</span></pre></div></div>                      </li>                              <li id="section-40">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>                           
+
+<p>end of core quickhull algorithm</p>
+
+             </div>                      </li>                              <li id="section-41">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-41">&#182;</a>               </div>                           
+
+<h1>Put everything together</h1>
+
+             </div>                      </li>                              <li id="section-42">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-42">&#182;</a>               </div>                           
+
+<h3>create random points</h3>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="nv">makePoints = </span><span class="nf">(random, n) -&gt;</span>
+  <span class="nv">s = </span><span class="mf">200.0</span>
+  <span class="nv">points = </span><span class="p">[]</span>
+
+  <span class="k">for</span> <span class="p">[</span><span class="mi">0</span><span class="p">..</span><span class="nx">n</span><span class="p">]</span>
+    <span class="nv">vector = </span><span class="k">new</span> <span class="nx">THREE</span><span class="p">.</span><span class="nx">Vector3</span><span class="p">(</span>
+      <span class="nx">random</span><span class="p">.</span><span class="nx">gauss</span><span class="p">(),</span> <span class="nx">random</span><span class="p">.</span><span class="nx">gauss</span><span class="p">(),</span> <span class="nx">random</span><span class="p">.</span><span class="nx">gauss</span><span class="p">()</span>
+    <span class="p">)</span> <span class="k">until</span> <span class="nx">vector</span><span class="o">?</span><span class="p">.</span><span class="nx">length</span><span class="p">()</span> <span class="o">&lt;</span> <span class="mi">3</span>
+    <span class="nx">points</span><span class="p">.</span><span class="nx">push</span> <span class="nx">vector</span><span class="p">.</span><span class="nx">multiplyScalar</span><span class="p">(</span><span class="nx">s</span><span class="p">)</span>
+
+  <span class="nx">points</span></pre></div></div>                      </li>                              <li id="section-43">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-43">&#182;</a>               </div>                           
+
+<h3>handy method to debug certain cases</h3>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="nv">seed = </span><span class="kc">null</span>
+<span class="c1">#@ seed = 726</span>
+
+<span class="k">if</span> <span class="nx">seed</span> <span class="o">==</span> <span class="kc">null</span>
+  <span class="nv">seed = </span><span class="p">(</span><span class="nb">Math</span><span class="p">.</span><span class="nx">random</span><span class="p">()</span> <span class="o">*</span> <span class="mi">10000</span><span class="p">).</span><span class="nx">toFixed</span> <span class="mi">0</span>
+
+<span class="nx">console</span><span class="p">.</span><span class="nx">log</span> <span class="s">&quot;seed&quot;</span><span class="p">,</span> <span class="nx">seed</span>
+<span class="nv">random = </span><span class="k">new</span> <span class="nx">Random</span>
+<span class="nx">random</span><span class="p">.</span><span class="nx">seed</span> <span class="nx">seed</span>
+
+<span class="nb">window</span><span class="p">.</span><span class="nv">points = </span><span class="nx">makePoints</span> <span class="nx">random</span><span class="p">,</span> <span class="mi">1000</span>
+
+<span class="nx">animate</span><span class="p">()</span>
+
+<span class="nv">reset = </span><span class="nf">-&gt;</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">points = </span><span class="nx">makePoints</span> <span class="nx">random</span><span class="p">,</span> <span class="mi">100</span>
+  <span class="k">if</span> <span class="nb">window</span><span class="p">.</span><span class="nx">tracer</span>
+    <span class="nb">window</span><span class="p">.</span><span class="nx">tracer</span><span class="p">.</span><span class="nx">clear</span><span class="p">()</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">tracer = </span><span class="k">new</span> <span class="nx">Tracer</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nv">solver = </span><span class="k">new</span> <span class="nx">QuickhullSolver</span> <span class="nb">window</span><span class="p">.</span><span class="nx">tracer</span>
+  <span class="nb">window</span><span class="p">.</span><span class="nx">solver</span><span class="p">.</span><span class="nx">getHull</span> <span class="nb">window</span><span class="p">.</span><span class="nx">points</span></pre></div></div>                      </li>                              <li id="section-44">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-44">&#182;</a>               </div>                           
+
+<h3>respond to user input</h3>
+
+             </div>                          <div class="content"><div class="highlight"><pre><span class="nv">lastKey = </span><span class="kc">null</span>
+<span class="nv">onKeyDown = </span><span class="nf">(e) -&gt;</span>
+  <span class="c1">#@ console.log e.keyCode</span>
+  <span class="nv">KEY_LEFT = </span><span class="mi">37</span>
+  <span class="nv">KEY_RIGHT = </span><span class="mi">39</span>
+  <span class="nv">KEY_J = </span><span class="s">&quot;J&quot;</span><span class="p">.</span><span class="nx">charCodeAt</span> <span class="mi">0</span>
+  <span class="nv">KEY_K = </span><span class="s">&quot;K&quot;</span><span class="p">.</span><span class="nx">charCodeAt</span> <span class="mi">0</span>
+  <span class="nv">KEY_R = </span><span class="s">&quot;R&quot;</span><span class="p">.</span><span class="nx">charCodeAt</span> <span class="mi">0</span>
+  <span class="nv">KEY_G = </span><span class="s">&quot;G&quot;</span><span class="p">.</span><span class="nx">charCodeAt</span> <span class="mi">0</span>
+  <span class="nv">KEY_END = </span><span class="mi">35</span>
+  <span class="nv">KEY_START = </span><span class="mi">36</span>
+
+  <span class="nv">KEYS_PREV = </span><span class="p">[</span><span class="nx">KEY_LEFT</span><span class="p">,</span> <span class="nx">KEY_K</span><span class="p">]</span>
+  <span class="nv">KEYS_NEXT = </span><span class="p">[</span><span class="nx">KEY_RIGHT</span><span class="p">,</span> <span class="nx">KEY_J</span><span class="p">]</span>
+
+  <span class="nv">KEYS_END = </span><span class="p">[</span><span class="nx">KEY_END</span><span class="p">]</span>
+  <span class="nv">KEYS_START = </span><span class="p">[</span><span class="nx">KEY_START</span><span class="p">]</span>
+
+  <span class="nv">KEYS_RESET = </span><span class="p">[</span><span class="nx">KEY_R</span><span class="p">]</span>
+
+  <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">KEYS_PREV</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">)</span> <span class="k">then</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">showPrev</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">KEYS_NEXT</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">)</span> <span class="k">then</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">showNext</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">KEYS_START</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">)</span> <span class="k">then</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">showFirst</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">KEYS_END</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">)</span> <span class="k">then</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">showLast</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">_</span><span class="p">.</span><span class="nx">contains</span><span class="p">(</span><span class="nx">KEYS_RESET</span><span class="p">,</span> <span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span><span class="p">)</span> <span class="k">then</span> <span class="nx">reset</span><span class="p">()</span>
+
+  <span class="k">if</span> <span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">keyCode</span> <span class="o">==</span> <span class="nx">KEY_G</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">shiftKey</span>
+      <span class="nx">tracer</span><span class="p">.</span><span class="nx">showLast</span><span class="p">()</span>
+    <span class="k">else</span>
+      <span class="nx">tracer</span><span class="p">.</span><span class="nx">showFirst</span><span class="p">()</span>
+
+  <span class="nv">lastKey = </span><span class="nx">e</span>
+
+<span class="nv">onMouseWheel = </span><span class="nf">(e) -&gt;</span>
+  <span class="c1">#@ console.log e</span>
+  <span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">wheelDeltaY</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">showNext</span><span class="p">()</span>
+  <span class="k">if</span> <span class="nx">e</span><span class="p">.</span><span class="nx">originalEvent</span><span class="p">.</span><span class="nx">wheelDeltaY</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">then</span> <span class="nx">tracer</span><span class="p">.</span><span class="nx">showPrev</span><span class="p">()</span>
+
+<span class="nx">$</span><span class="p">(</span><span class="nb">window</span><span class="p">).</span><span class="nx">on</span> <span class="s">&#39;keydown&#39;</span><span class="p">,</span> <span class="nx">onKeyDown</span>
+<span class="nx">$</span><span class="p">(</span><span class="nb">window</span><span class="p">).</span><span class="nx">on</span> <span class="s">&#39;mousewheel&#39;</span><span class="p">,</span> <span class="nx">onMouseWheel</span></pre></div></div>                      </li>                              <li id="section-45">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-45">&#182;</a>               </div>                           
+
+<h3>get it started</h3>             </div>                          <div class="content"><div class="highlight"><pre><span class="nx">reset</span><span class="p">()</span>
+
+</pre></div></div>                      </li>              </ul>    </div> </body> </html> 
