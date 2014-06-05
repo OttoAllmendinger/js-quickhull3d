@@ -4,7 +4,7 @@ qhull.js: qhull.coffee
 
 doc/qhull.html: qhull.coffee
 	# use docco-dev (supports developer comments)
-	docco -c docs/docco.custom.css $<
+	docco -c docs/docco.custom.css -t docs/docco.jst $<
 
 watch:
 	while true; do \
