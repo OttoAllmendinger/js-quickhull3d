@@ -12,10 +12,10 @@
     var bgColor, camera, container, controls, onWindowResize, renderer, scene, sceneRoot, stats;
     bgColor = 0xeeeeee;
     container = document.getElementById('container');
-    camera = camera = new THREE.PerspectiveCamera(27, window.innerWidth / window.innerHeight, 5, 3500);
-    camera.position.z = 2750;
+    camera = camera = new THREE.PerspectiveCamera(27, window.innerWidth / window.innerHeight, 5, 5500);
+    camera.position.z = 3750;
     scene = new THREE.Scene;
-    scene.fog = new THREE.Fog(bgColor, 2000, 4000);
+    scene.fog = new THREE.Fog(bgColor, 3000, 5000);
     renderer = new THREE.WebGLRenderer({
       antialias: true
     });
