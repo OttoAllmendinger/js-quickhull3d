@@ -550,7 +550,9 @@
           faces: this.hull,
           edges: _.map(this.hull, function(f) {
             return f.normalLine();
-          })
+          }),
+          vertices: points,
+          hiVertices: [a, b, c]
         });
       }
       this.hull.forEach(checkFace);

@@ -499,6 +499,8 @@ class QuickhullSolver
       @tracer.trace "initial hull with normals",
         faces: @hull
         edges: _.map @hull, (f) -> f.normalLine()
+        vertices: points
+        hiVertices: [a, b, c]
 
     #@ sanity check
     @hull.forEach checkFace

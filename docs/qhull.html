@@ -507,6 +507,8 @@ needed when stitching up faces.</p>
       <span class="nx">@tracer</span><span class="p">.</span><span class="nx">trace</span> <span class="s">&quot;initial hull with normals&quot;</span><span class="p">,</span>
         <span class="nv">faces: </span><span class="nx">@hull</span>
         <span class="nv">edges: </span><span class="nx">_</span><span class="p">.</span><span class="nx">map</span> <span class="nx">@hull</span><span class="p">,</span> <span class="nf">(f) -&gt;</span> <span class="nx">f</span><span class="p">.</span><span class="nx">normalLine</span><span class="p">()</span>
+        <span class="nv">vertices: </span><span class="nx">points</span>
+        <span class="nv">hiVertices: </span><span class="p">[</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">,</span> <span class="nx">c</span><span class="p">]</span>
 
     <span class="c1">#@ sanity check</span>
     <span class="nx">@hull</span><span class="p">.</span><span class="nx">forEach</span> <span class="nx">checkFace</span></pre></div></div>                      </li>                              <li id="section-22">             <div class="annotation">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>                           
