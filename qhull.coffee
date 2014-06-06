@@ -77,13 +77,6 @@ render = ->
 window.controls.addEventListener 'change', render
 
 
-#### The initial splash screen
-#
-# HTML containing instructions and key bindings
-
-INSTRUCTIONS = """
-"""
-
 
 
 #### The Tracer
@@ -291,17 +284,16 @@ class Tracer
 
 ## Quickhull
 
-TRACE_INITIAL = true
+#### Tracer settings
+config =
+  TRACE_INITIAL: true
+  TRACE_HORIZON: true
+  TRACE_MANY_HORIZON_PATHS: false
+  TRACE_HORIZON_STEP: false
+  TRACE_TERMINATE: false
+  TRACE_NEW_FACE_EACH: false
+  TRACE_NEW_FACES: true
 
-TRACE_HORIZON = true
-
-TRACE_MANY_HORIZON_PATHS = false
-
-TRACE_TERMINATE = false
-
-TRACE_NEW_FACE_EACH = false
-
-TRACE_NEW_FACES = true
 
 #### Face Edge
 #
@@ -503,7 +495,7 @@ class QuickhullSolver
     # basic hull
     @hull = [f, g]
 
-    if TRACE_INITIAL
+    if config.TRACE_INITIAL
       @tracer.trace "initial hull with normals",
         faces: @hull
         edges: _.map @hull, (f) -> f.normalLine()
@@ -540,14 +532,13 @@ class QuickhullSolver
     if not checkHorizon horizon
       throw new Error "invalid horizon"
 
-    if TRACE_HORIZON
+    if config.TRACE_HORIZON
       @tracer.trace "expand hull",
         faces: visited
-        hiFaces: [face]
         edges: horizon
         vertices: face.assignedPoints
         hiVertices: [d]
-        subtitle: "find faces visible from furthest point"
+        subtitle: "#{visited.length} faces visible from furthest point"
 
 
     # Create new hull and reconnect faces properly. Because the horizon is
@@ -572,31 +563,34 @@ class QuickhullSolver
       f.assignedPoints = []
       f.deleted = true
 
-    if TRACE_NEW_FACE_EACH
+    if config.TRACE_NEW_FACE_EACH
       newFaces.forEach (f) ->
-        @tracer.trace "newFace",
+        @tracer.trace "new face",
           faces: [f]
           vertices: f.assignedPoints
-          hiVertices:
-            if f.furthest.point
-              [f.furthest.point]
-            else
-              []
+          edges: [f.linkAB]
+          hiVertices: [d]
+          subtitle: """
+            new face from found horizon edge to furthest point,
+            #{f.assignedPoints.length} assigned points"""
 
-    if TRACE_NEW_FACES
+    if config.TRACE_NEW_FACES
       @tracer.trace "new faces",
         vertices: [d]
         edges: horizon
         faces: newFaces
-        subtitle: "create new faces along the found horizon"
+        subtitle: "#{newFaces.length} new faces along the found horizon"
 
     # add new faces to hull
     @hull.push newFaces...
 
+    totalFaces = _.filter(@hull, (h) -> not h.deleted)
+
     @tracer.trace "new hull",
       faces: @hull
+      hiFaces: newFaces
       vertices: points
-      subtitle: "#{_.filter(@hull, (h) -> not h.deleted).length} faces"
+      subtitle: "#{totalFaces.length} total hull faces"
 
     @hull.forEach checkFace
 
@@ -636,12 +630,20 @@ class QuickhullSolver
 
     horizonPaths = []
 
-    addHorizon = (links) =>
-      if not _.some(horizonPaths, (path) -> mergePaths path, links)
-        horizonPaths.push links
+    # if new link can't be merged with existing path, add new path
+    addHorizon = (link) =>
+      if not _.some(horizonPaths, (path) -> mergePaths path, [link])
+        horizonPaths.push [link]
+
+      if config.TRACE_HORIZON_STEP
+        @tracer.trace "found horizon edge",
+          faces: [link.from, link.to]
+          edges: [link]
+          vertices: [point]
+          subtitle: 'boundary between visible and invisible face'
 
       # very rarely there are more than 2 paths to check
-      if TRACE_MANY_HORIZON_PATHS
+      if config.TRACE_MANY_HORIZON_PATHS
         if horizonPaths.length > 2
           horizonPaths.forEach (links, i) ->
             @tracer.trace "horizon path #{i}",
@@ -658,7 +660,7 @@ class QuickhullSolver
         if l.horizon
           # if the face on the other side of the link is invisible, we have a
           # horizon link
-          addHorizon [l]
+          addHorizon l
         else
           # otherwise we might have a new face to expand the search to
           if not l.to.visited
@@ -712,13 +714,37 @@ window.points = makePoints random, 1000
 
 animate()
 
-reset = ->
+reset = (seed) ->
+  if seed then random.seed seed
   window.points = makePoints random, 100
   if window.tracer
     window.tracer.clear()
   window.tracer = new Tracer
   window.solver = new QuickhullSolver window.tracer
   window.solver.getHull window.points
+
+#### Settings widget
+
+
+$settings = $("#settings")
+
+addSetting = (description, key) ->
+  changeKey = (key, value) ->
+    config[key] = value
+    reset seed
+
+  $checkbox = $("<input>", type: "checkbox")
+    .on('change', (e) -> changeKey key, $checkbox.prop 'checked')
+  $checkbox.prop 'checked', config[key]
+  $el = $("<div>").append $("<label>").text(description).append($checkbox)
+  $settings.append $el
+
+addSetting 'show initial points',       "TRACE_INITIAL"
+addSetting 'show new horizon',          "TRACE_HORIZON"
+addSetting 'show horizon search step',  "TRACE_HORIZON_STEP"
+addSetting 'show new individual faces', "TRACE_NEW_FACE_EACH"
+addSetting 'show new face group',       "TRACE_NEW_FACES"
+
 
 #### respond to user input
 

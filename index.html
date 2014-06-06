@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-  <title>three.js quickhull3d</title>
+  <title>js-quickhull3d</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <style>
@@ -61,7 +61,16 @@
         right: 0;
         padding: 2mm;
       }
+
+      div#settings {
+        position: absolute;
+        top: 0;
+        right: 0;
+        padding: 2mm;
+        text-align: right;
+      }
     </style>
+
   </head>
 
   <script type="text/template" id="instructions">
@@ -108,6 +117,11 @@
           annotated source</a>
       </div>
     </div>
+
+    <div id="settings">
+      <div>Settings</div>
+    </div>
+
     <script src="lib/three.min.js"></script>
     <script src="lib/Detector.js"></script>
     <script src="lib/stats.min.js"></script>
